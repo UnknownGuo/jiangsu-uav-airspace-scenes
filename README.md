@@ -77,6 +77,20 @@ huaian suqian xuzhou lianyungang`
 
 地图 HTML 为单文件，微信/邮件直接发送即可分享（打开时需联网加载底图瓦片）。
 
+## 发布为网页（Cloudflare Pages，免费无需服务器）
+
+首次准备：注册 [Cloudflare](https://dash.cloudflare.com/sign-up)（仅邮箱），然后
+`npx wrangler login` 浏览器授权一次。之后每次更新地图后重新发布只需：
+
+```bash
+scripts/05_deploy.sh    # 组装 output/site/ 并部署, 得到 https://jiangsu-uav-maps.pages.dev
+```
+
+站点含入口页（`web/index.html`）、14 张地图和各市 KML/CSV 下载。注意：网页公开后
+HTML 内嵌的高德 key 随之公开，建议在[高德控制台](https://console.amap.com/)给该 key
+设置每日调用量上限，防止被盗刷（免费账户超额只会拒绝服务，不会扣费）；
+所有页面已加 `noindex` 降低被搜索引擎收录的概率。
+
 ## 分类逻辑
 
 **全覆盖层（1km）**，按块内 ESA WorldCover 各类占比：

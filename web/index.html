@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>江苏省无人机试飞空域场景分块地图</title>
+<style>
+  html,body{margin:0;font-family:"PingFang SC","Microsoft YaHei",sans-serif;background:#f5f6f8;color:#222}
+  .wrap{max-width:860px;margin:0 auto;padding:24px 16px 40px}
+  h1{font-size:22px;margin:8px 0 4px}
+  .sub{color:#666;font-size:14px;margin-bottom:20px;line-height:1.6}
+  .hero{display:block;background:#1f78d1;color:#fff;text-decoration:none;border-radius:10px;
+    padding:16px 20px;margin-bottom:22px;box-shadow:0 1px 4px rgba(0,0,0,.15)}
+  .hero b{font-size:17px}
+  .hero span{display:block;font-size:13px;opacity:.85;margin-top:4px}
+  h2{font-size:16px;margin:18px 0 10px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+  .card{background:#fff;border-radius:8px;padding:12px 14px;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+  .card a.map{font-size:15px;font-weight:600;color:#1f78d1;text-decoration:none}
+  .card .dl{margin-top:6px;font-size:12px}
+  .dl a{color:#888;text-decoration:none;margin-right:10px}
+  .dl a:hover,.card a.map:hover{text-decoration:underline}
+  .note{background:#fff8e6;border:1px solid #f0dfae;border-radius:8px;padding:10px 14px;
+    font-size:13px;color:#665;line-height:1.7;margin-top:24px}
+  .foot{font-size:12px;color:#999;margin-top:18px;line-height:1.7}
+  .foot a{color:#999}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>江苏省无人机试飞空域场景分块地图</h1>
+  <div class="sub">在江苏省公示的无人机适飞空域内,叠加 10m 土地覆盖数据划分飞行测量场景块
+    (水域 / 林区 / 密集城区 / 农田 / 郊区等)。地图可缩放、切换卫星/街道底图、
+    点击色块查看地物占比,左上角搜索框可输入地名定位。</div>
+
+  <a class="hero" href="jiangsu_all.html"><b>全省总图</b>
+    <span>13 市适飞区场景分类 + 303 个优选试飞块(约 7 MB,建议 Wi-Fi 加载)</span></a>
+
+  <h2>市级地图(1km 全覆盖分类 + 2km 优选块,2–4 MB/张)</h2>
+  <div class="grid">
+    <div class="card"><a class="map" href="nanjing.html">南京市</a>
+      <div class="dl"><a href="files/nanjing/blocks_selected.kml">KML</a><a href="files/nanjing/blocks_summary.csv">CSV</a></div></div>
+    <div class="card"><a class="map" href="suzhou.html">苏州市</a>
+      <div class="dl"><a href="files/suzhou/blocks_selected.kml">KML</a><a href="files/suzhou/blocks_summary.csv">CSV</a></div></div>
+    <div class="card"><a class="map" href="wuxi.html">无锡市</a>
+      <div class="dl"><a href="files/wuxi/blocks_selected.kml">KML</a><a href="files/wuxi/blocks_summary.csv">CSV</a></div></div>
+    <div class="card"><a class="map" href="changzhou.html">常州市</a>
+      <div class="dl"><a href="files/changzhou/blocks_selected.kml">KML</a><a href="files/changzhou/blocks_summary.csv">CSV</a></div></div>
+    <div class="card"><a class="map" href="zhenjiang.html">镇江市</a>
+      <div class="dl"><a href="files/zhenjiang/blocks_selected.kml">KML</a><a href="files/zhenjiang/blocks_summary.csv">CSV</a></div></div>
+    <div class="card"><a class="map" href="yangzhou.html">扬州市</a>
+      <div class="dl"><a href="files/yangzhou/blocks_selected.kml">KML</a><a href="files/yangzhou/blocks_summary.csv">CSV</a></div></div>
+    <div class="card"><a class="map" href="taizhou.html">泰州市</a>
+      <div class="dl"><a href="files/taizhou/blocks_selected.kml">KML</a><a href="files/taizhou/blocks_summary.csv">CSV</a></div></div>
+    <div class="card"><a class="map" href="nantong.html">南通市</a>
+      <div class="dl"><a href="files/nantong/blocks_selected.kml">KML</a><a href="files/nantong/blocks_summary.csv">CSV</a></div></div>
+    <div class="card"><a class="map" href="yancheng.html">盐城市</a>
+      <div class="dl"><a href="files/yancheng/blocks_selected.kml">KML</a><a href="files/yancheng/blocks_summary.csv">CSV</a></div></div>
+    <div class="card"><a class="map" href="huaian.html">淮安市</a>
+      <div class="dl"><a href="files/huaian/blocks_selected.kml">KML</a><a href="files/huaian/blocks_summary.csv">CSV</a></div></div>
+    <div class="card"><a class="map" href="suqian.html">宿迁市</a>
+      <div class="dl"><a href="files/suqian/blocks_selected.kml">KML</a><a href="files/suqian/blocks_summary.csv">CSV</a></div></div>
+    <div class="card"><a class="map" href="xuzhou.html">徐州市</a>
+      <div class="dl"><a href="files/xuzhou/blocks_selected.kml">KML</a><a href="files/xuzhou/blocks_summary.csv">CSV</a></div></div>
+    <div class="card"><a class="map" href="lianyungang.html">连云港市</a>
+      <div class="dl"><a href="files/lianyungang/blocks_selected.kml">KML</a><a href="files/lianyungang/blocks_summary.csv">CSV</a></div></div>
+  </div>
+
+  <div class="note">⚠️ 适飞空域为公示数据,<b>实际飞行仍需通过江苏低空飞行服务平台/小程序登记报备</b>;
+    节假日等临时限飞区不在图中,飞前请查当日公告。地物分类基于 2021 年卫星数据,飞前建议卫星图复核现状。</div>
+
+  <div class="foot">适飞空域数据源: <a href="https://www.jfsc.cn">jfsc.cn 江苏低空飞行服务</a>(公示 KML) |
+    土地覆盖: ESA WorldCover 2021 (10m, CC-BY 4.0) | 底图: Esri World Imagery / OpenStreetMap |
+    KML 可导入 Google Earth 及主流航线规划软件</div>
+</div>
+</body>
+</html>

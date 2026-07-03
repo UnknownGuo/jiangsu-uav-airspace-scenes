@@ -97,6 +97,7 @@ def html_shell(title, body_js, search_city="江苏"):
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
 <title>{title}</title>
 <style>{leaflet_css}</style>
 <style>

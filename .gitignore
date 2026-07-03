@@ -1,0 +1,6 @@
+# 大文件数据源, 由 scripts/01_fetch_data.sh 下载
+data/*.tif
+data/*.kml
+
+# 生成结果, 由 scripts/02-04 重新生成
+output/

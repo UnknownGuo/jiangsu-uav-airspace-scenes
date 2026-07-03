@@ -108,6 +108,10 @@ def html_shell(title, body_js, search_city="江苏"):
   .city-label{{background:none;border:none;box-shadow:none;font-weight:700;font-size:14px;
     color:#ffe;text-shadow:0 0 4px #000,0 0 4px #000;white-space:nowrap}}
   .legend{{background:#fff;padding:8px 12px;border-radius:6px;box-shadow:0 1px 5px rgba(0,0,0,.4);line-height:1.7}}
+  .legend-head{{cursor:pointer;user-select:none;display:flex;justify-content:space-between;gap:8px}}
+  .legend-head .arrow{{transition:transform .2s}}
+  .legend.collapsed .legend-body{{display:none}}
+  .legend.collapsed .arrow{{transform:rotate(-90deg)}}
   .geosearch{{background:#fff;padding:6px;border-radius:6px;box-shadow:0 1px 5px rgba(0,0,0,.4);width:220px}}
   .geosearch input{{width:100%;box-sizing:border-box;border:1px solid #ccc;border-radius:4px;padding:4px 6px;font-size:13px}}
   .geosearch .results{{max-height:220px;overflow-y:auto;font-size:12px}}
@@ -132,6 +136,9 @@ const sat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Wo
 const osm = L.tileLayer('https://tile.openstreetmap.org/{{z}}/{{x}}/{{y}}.png',
   {{maxZoom: 19, attribution: 'OpenStreetMap'}});
 const map = L.map('map', {{layers: [sat], preferCanvas: true}});
+// 底部控件(图例/attribution)抬到 footer 横幅之上, 避免被遮挡
+const footH = document.querySelector('.footer').offsetHeight;
+document.querySelectorAll('.leaflet-bottom').forEach(el => el.style.bottom = footH + 'px');
 function color(scene) {{
   return SCENE_COLORS[scene] || SCENE_COLORS[scene.split('+')[0]] || '#666';
 }}
@@ -139,12 +146,17 @@ function pctRows(p) {{
   return `林 ${{p.pct_tree}}% | 草 ${{p.pct_grass}}% | 农 ${{p.pct_crop}}%<br>
     建 ${{p.pct_built}}% | 水 ${{p.pct_water}}% | 湿 ${{p.pct_wetland}}%`;
 }}
+const isSmall = window.innerWidth < 768;  // 手机端: 图层控件与图例默认收起
 function addLegend(extra) {{
   const legend = L.control({{position: 'bottomright'}});
   legend.onAdd = () => {{
     const div = L.DomUtil.create('div', 'legend');
-    div.innerHTML = '<b>场景类别</b>（叠加类按主类着色）<br>' + Object.entries(SCENE_COLORS)
-      .map(([k, v]) => `<i style="background:${{v}}"></i>${{k}}`).join('<br>') + (extra || '');
+    div.innerHTML = '<div class="legend-head"><b>场景类别</b><span class="arrow">▾</span></div>'
+      + '<div class="legend-body">（叠加类按主类着色）<br>' + Object.entries(SCENE_COLORS)
+      .map(([k, v]) => `<i style="background:${{v}}"></i>${{k}}`).join('<br>') + (extra || '') + '</div>';
+    L.DomEvent.disableClickPropagation(div);
+    div.querySelector('.legend-head').onclick = () => div.classList.toggle('collapsed');
+    if (isSmall) div.classList.add('collapsed');
     return div;
   }};
   legend.addTo(map);
@@ -319,7 +331,7 @@ L.control.layers(
   {{'卫星影像 (Esri)': sat, '街道图 (OSM)': osm}},
   {{'适飞空域边界': airspaceLayer, '全覆盖分类 (1km)': coverLayer,
     '优选试飞块 (2km)': selLayer, '块标签': labelGroup, '全部2km格网': allLayer}},
-  {{collapsed: false}}
+  {{collapsed: isSmall}}
 ).addTo(map);
 addLegend('<br><i style="border:1.5px solid #00e5e5;background:none"></i>适飞空域边界');
 map.fitBounds(airspaceLayer.getBounds().pad(0.03));
@@ -407,7 +419,7 @@ L.control.layers(
   {{'卫星影像 (Esri)': sat, '街道图 (OSM)': osm}},
   {{'适飞空域边界': boundaryLayer, '场景分类 (按主类溶解)': coverLayer,
     '优选试飞块 (2km)': selLayer, '城市名': labelGroup}},
-  {{collapsed: false}}
+  {{collapsed: isSmall}}
 ).addTo(map);
 addLegend('<br><i style="border:1.5px solid #00e5e5;background:none"></i>适飞空域边界' +
   '<br><span style="font-size:11px;color:#666">优选块为白边高亮小方块<br>各市 1km 细分见市级地图</span>');

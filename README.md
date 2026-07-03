@@ -14,6 +14,8 @@
   （整块 ≥90% 在适飞区内，同类间距 ≥5km），全省共 303 块
 - **交互地图**：13 张市级图 + 1 张全省总图，单文件 HTML 可直接分享；
   卫星/街道底图切换、图层开关、点击弹出场景与占比、优选块中文标签
+- **地名搜索定位**：地图左上角搜索框输入即实时下拉匹配（高德输入提示 API，国内地名/POI 覆盖好），
+  点击候选即定位打标（GCJ-02 坐标已纠偏为 WGS-84，与底图无偏移）；仅定位，不做导航
 - **多格式导出**：GeoJSON（GIS 分析）、KML（Google Earth / 航线规划软件）、CSV（坐标汇总表）
 
 ## 效果示意
@@ -49,6 +51,11 @@ python3 scripts/03_classify_blocks.py [city ...]
 # 4. 生成交互地图 (缺省: 13 市 + 全省总图)
 python3 scripts/04_make_map.py [city ...]
 ```
+
+地名搜索需要高德开放平台的 **Web服务** key（[console.amap.com](https://console.amap.com/)
+免费注册，个人实名认证后创建应用 → 添加 Key → 服务平台选"Web服务"），放入
+`data/amap_key.txt`（或环境变量 `AMAP_KEY`）后再运行第 4 步。不配置 key 地图仍可生成，
+仅搜索框不可用。注意 key 会嵌入生成的 HTML，分享出去的人共用你的免费配额。
 
 生成结果（`output/`，均可由脚本重新生成，不入库）：
 
@@ -94,6 +101,7 @@ huaian suqian xuzhou lianyungang`
 - **土地覆盖**: [ESA WorldCover 2021 v200](https://esa-worldcover.org/)（10m，CC-BY 4.0），
   AWS S3 公开桶下载，瓦片 N30E117 / N30E120 / N33E114 / N33E117 / N33E120
 - **底图**: Esri World Imagery / OpenStreetMap（均 WGS-84 无偏移；勿换高德等 GCJ-02 底图，会与数据错位）
+- **地名搜索**: 高德输入提示 API（返回 GCJ-02，前端已用通用逆偏移算法转 WGS-84，误差 1–2 m）
 
 ## 注意事项
 

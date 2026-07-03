@@ -2,5 +2,8 @@
 data/*.tif
 data/*.kml
 
+# 高德 API key, 不入库
+data/amap_key.txt
+
 # 生成结果, 由 scripts/02-04 重新生成
 output/

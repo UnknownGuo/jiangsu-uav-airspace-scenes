@@ -135,7 +135,7 @@ const sat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Wo
   {{maxZoom: 19, attribution: 'Esri World Imagery'}});
 const osm = L.tileLayer('https://tile.openstreetmap.org/{{z}}/{{x}}/{{y}}.png',
   {{maxZoom: 19, attribution: 'OpenStreetMap'}});
-const map = L.map('map', {{layers: [sat], preferCanvas: true}});
+const map = L.map('map', {{layers: [sat], preferCanvas: true, tap: true}});
 // 底部控件(图例/attribution)抬到 footer 横幅之上, 避免被遮挡
 const footH = document.querySelector('.footer').offsetHeight;
 document.querySelectorAll('.leaflet-bottom').forEach(el => el.style.bottom = footH + 'px');
@@ -145,6 +145,31 @@ function color(scene) {{
 function pctRows(p) {{
   return `林 ${{p.pct_tree}}% | 草 ${{p.pct_grass}}% | 农 ${{p.pct_crop}}%<br>
     建 ${{p.pct_built}}% | 水 ${{p.pct_water}}% | 湿 ${{p.pct_wetland}}%`;
+}}
+// 点击/点按显示地名: 高德逆地理编码, 结果缓存; 无 key 时显示坐标
+const regeoCache = new Map();
+async function reverseGeocode(lat, lon) {{
+  if (!AMAP_KEY) return `${{lat.toFixed(5)}}°N, ${{lon.toFixed(5)}}°E`;
+  const cacheKey = `${{lat.toFixed(5)}},${{lon.toFixed(5)}}`;
+  if (regeoCache.has(cacheKey)) return regeoCache.get(cacheKey);
+  try {{
+    const url = 'https://restapi.amap.com/v3/geocode/regeo?key=' + AMAP_KEY
+      + '&location=' + lon.toFixed(5) + ',' + lat.toFixed(5) + '&extensions=base';
+    const rsp = await (await fetch(url)).json();
+    if (rsp.status === '1' && rsp.regeocode && rsp.regeocode.formatted_address) {{
+      regeoCache.set(cacheKey, rsp.regeocode.formatted_address);
+      return rsp.regeocode.formatted_address;
+    }}
+  }} catch (e) {{}}
+  return `${{lat.toFixed(5)}}°N, ${{lon.toFixed(5)}}°E`;
+}}
+function bindPopupWithAddress(l, makeHtml) {{
+  const baseHtml = makeHtml();
+  l.bindPopup(baseHtml);
+  l.on('click', async (e) => {{
+    const addr = await reverseGeocode(e.latlng.lat, e.latlng.lng);
+    l.setPopupContent(baseHtml + `<br><b>位置:</b> ${{addr}}`);
+  }});
 }}
 const isSmall = window.innerWidth < 768;  // 手机端: 图层控件与图例默认收起
 function addLegend(extra) {{
@@ -295,7 +320,7 @@ const coverLayer = L.geoJSON(COVERAGE, {{
                  fillColor: color(f.properties.scene), fillOpacity: 0.55}}),
   onEachFeature: (f, l) => {{
     const p = f.properties;
-    l.bindPopup(`<b>${{p.scene}}</b>（${{p.area_km2}} km²）<br>` + pctRows(p));
+    bindPopupWithAddress(l, () => `<b>${{p.scene}}</b>（${{p.area_km2}} km²）<br>` + pctRows(p));
   }}
 }}).addTo(map);
 
@@ -307,7 +332,7 @@ const allLayer = L.geoJSON(BLOCKS_ALL, {{
   }},
   onEachFeature: (f, l) => {{
     const p = f.properties;
-    l.bindPopup(`<b>${{p.id}}</b> ${{p.labels || '(未达标)'}}<br>` + pctRows(p));
+    bindPopupWithAddress(l, () => `<b>${{p.id}}</b> ${{p.labels || '(未达标)'}}<br>` + pctRows(p));
   }}
 }});
 
@@ -317,7 +342,7 @@ const selLayer = L.geoJSON(BLOCKS_SEL, {{
                  fillColor: color(f.properties.scene), fillOpacity: 0.35}}),
   onEachFeature: (f, l) => {{
     const p = f.properties;
-    l.bindPopup(`<b>${{p.scene}} #${{p.rank}}</b>（${{p.id}}）<br>
+    bindPopupWithAddress(l, () => `<b>${{p.scene}} #${{p.rank}}</b>（${{p.id}}）<br>
       中心: ${{p.center_lat.toFixed(5)}}°N, ${{p.center_lon.toFixed(5)}}°E<br>
       尺寸: 2 km × 2 km<br>` + pctRows(p));
     const c = l.getBounds().getCenter();
@@ -386,7 +411,7 @@ const CITY_CENTERS = {json.dumps(city_centers, ensure_ascii=False)};
 
 const boundaryLayer = L.geoJSON(BOUNDARIES, {{
   style: {{color: '#00e5e5', weight: 1.5, fillColor: '#00e5e5', fillOpacity: 0.05}},
-  onEachFeature: (f, l) => l.bindPopup(`<b>${{f.properties.city}}</b> 适飞空域`)
+  onEachFeature: (f, l) => bindPopupWithAddress(l, () => `<b>${{f.properties.city}}</b> 适飞空域`)
 }}).addTo(map);
 
 const coverLayer = L.geoJSON(DISSOLVED, {{
@@ -394,7 +419,7 @@ const coverLayer = L.geoJSON(DISSOLVED, {{
                  fillColor: color(f.properties.scene), fillOpacity: 0.55}}),
   onEachFeature: (f, l) => {{
     const p = f.properties;
-    l.bindPopup(`<b>${{p.city}} · ${{p.scene}}</b><br>约 ${{p.n_blocks}} 个 1km 块<br>
+    bindPopupWithAddress(l, () => `<b>${{p.city}} · ${{p.scene}}</b><br>约 ${{p.n_blocks}} 个 1km 块<br>
       详细占比见对应市级地图`);
   }}
 }}).addTo(map);
@@ -405,7 +430,7 @@ const selLayer = L.geoJSON(BLOCKS_SEL, {{
                  fillColor: color(f.properties.scene), fillOpacity: 0.8}}),
   onEachFeature: (f, l) => {{
     const p = f.properties;
-    l.bindPopup(`<b>${{p.city}} ${{p.scene}} #${{p.rank}}</b>（${{p.id}}）<br>
+    bindPopupWithAddress(l, () => `<b>${{p.city}} ${{p.scene}} #${{p.rank}}</b>（${{p.id}}）<br>
       中心: ${{p.center_lat.toFixed(5)}}°N, ${{p.center_lon.toFixed(5)}}°E | 2km × 2km<br>` + pctRows(p));
   }}
 }}).addTo(map);
